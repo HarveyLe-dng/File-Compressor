@@ -8,6 +8,6 @@
 .vscode/
 .idea/
 *.swp
-
+*.gitignore
 # file output
 data/OUT.txt

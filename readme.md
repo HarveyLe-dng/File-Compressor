@@ -7,3 +7,4 @@ Current progress:
     .Count charactor frequency
     .Built huffman tree and encoding table
     .Bitwise manipulation (is being under progress)
+
