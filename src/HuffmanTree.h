@@ -23,11 +23,13 @@ class Huffmantree{
         void deletetree(Node* root); // freetree
 
     public:
+        std::map<char,int> freq_map;
         Huffmantree();
         ~Huffmantree();
-        void built(const std::string& text);
+        void built_fromtext(const std::string& text);
+        void built_frommap (std::map<char,int> mp);
         std::map<char, std::string> getENcodes();
-        
+        Node* getroot();
 };
 
 #endif

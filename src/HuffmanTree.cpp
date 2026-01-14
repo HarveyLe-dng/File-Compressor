@@ -1,10 +1,11 @@
-#include "Huffmantree.h"
+#include "HuffmanTree.h"
 #include <iostream>
 
 Node::Node(char ch, int freq){ // constructor
     c = ch;
     fre = freq;
     l = r = nullptr;
+    isInterval = 0;
 }
 struct cmp{
     bool operator()(Node* a, Node* b){
@@ -24,15 +25,20 @@ void Huffmantree::deletetree(Node* cur){
     deletetree(cur->r);
     delete cur;
 }
-
-void Huffmantree::built(const std::string &text){
-    std::map<char,int> cnt;
-    std::priority_queue<Node*, std::vector<Node*>, cmp> pq;
-
+// built tree from text
+void Huffmantree::built_fromtext(const std::string &text){
+    freq_map.clear();
     for(char c : text){
-        cnt[c] ++;
+        freq_map[c] ++;
     }
-    for(auto x : cnt){
+    built_frommap(freq_map);
+}
+//built tree from map
+void Huffmantree::built_frommap(std::map<char,int> mp){
+    std::priority_queue<Node*, std::vector<Node*>, cmp> pq;
+    this->freq_map = mp;// truyen mot map moi vao thi phai luu  lai tren object Huffman hien tai
+
+    for(auto x : freq_map){
         Node* tmp = new Node(x.first, x.second);
         pq.push(tmp);
     }
@@ -47,7 +53,7 @@ void Huffmantree::built(const std::string &text){
 
         pq.push(tmp);
     }
-    Node* root = pq.top();
+    root = pq.top();
     generate(root, "");
 }
 
@@ -62,6 +68,10 @@ void Huffmantree::generate(Node* cur, std::string s){
     return;
 }
 
+Node* Huffmantree::getroot(){
+    return root;
+}
 std::map<char, std::string> Huffmantree::getENcodes(){
     return codes;
 }
+
