@@ -4,7 +4,7 @@
 #include <fstream>
 
 void compress(std::string inf, std::string outf){
-    std::ifstream inp(inf); // input
+    std::ifstream inp(inf, std::ios::binary); // input
     std::ofstream out(outf, std::ios::binary); // output
 
     std::string text = "";
@@ -17,7 +17,7 @@ void compress(std::string inf, std::string outf){
     Huffmantree DSA;
 
     DSA.built_fromtext(text);
-    std::map<char,std::string> encode = DSA.getENcodes(); // du lieu ma hoa
+    Huffmancode* encode = DSA.getcodes();// du lieu ma hoa
 
     //write freq_map in header
     //1. write map location of map size 
@@ -35,7 +35,9 @@ void compress(std::string inf, std::string outf){
     //write in zip file
     Bitwriter writer;
     for(char c: text){
-        writer.write(encode[c], out);
+        unsigned char u_c = (unsigned char)c;
+        Huffmancode h_c = encode[u_c];
+        writer.write(h_c.code, h_c.len, out);
     }
     writer.flush(out);
 
@@ -71,12 +73,12 @@ void decompress(std::string inf, std::string outf){
     Node* root = DSA.getroot();
 
     Node *cur = root;
-    char by;
-    while(inp.get(by) && total){
-        unsigned byt = static_cast<unsigned char> (by); // for safe
+    char byte;
+    while(inp.get(byte) && total){
+        unsigned char u_byte = static_cast<unsigned char> (byte); // for safe
         for(int i = 7; i>= 0; i--){
 
-            if(((byt >> i) & 1) == 0) cur = cur->l;
+            if(((u_byte >> i) & 1) == 0) cur = cur->l;
             else cur = cur->r;
 
             if(!cur->isInterval){ // ur if normal leaf

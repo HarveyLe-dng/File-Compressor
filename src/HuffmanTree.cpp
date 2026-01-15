@@ -17,7 +17,7 @@ Huffmantree::Huffmantree(){
     root = nullptr;
 }
 Huffmantree::~Huffmantree(){
-    Huffmantree::deletetree(root);
+    deletetree(root);
 }
 void Huffmantree::deletetree(Node* cur){
     if(cur == nullptr) return;
@@ -42,6 +42,12 @@ void Huffmantree::built_frommap(std::map<char,int> mp){
         Node* tmp = new Node(x.first, x.second);
         pq.push(tmp);
     }
+
+    if(pq.size() == 1){
+        pq.top()->isInterval = 1;
+        pq.top()->l = new Node(pq.top()->c, pq.top()->fre);
+        pq.top()->r = new Node('\0', 0);
+    }
     while(pq.size() != 1){
         Node* a = pq.top(); pq.pop();
         Node* b = pq.top(); pq.pop();
@@ -54,16 +60,18 @@ void Huffmantree::built_frommap(std::map<char,int> mp){
         pq.push(tmp);
     }
     root = pq.top();
-    generate(root, "");
+    generate(root, 0, 0);
 }
 
-void Huffmantree::generate(Node* cur, std::string s){
+void Huffmantree::generate(Node* cur, unsigned int cur_code, int cur_len){
     if(cur == nullptr) return;
-    if(!cur->isInterval){
-        codes[cur->c] = s; // stored codes
+    if (!cur->isInterval) {
+        unsigned char id = (unsigned char)cur->c;
+        codes[id].code = cur_code;
+        codes[id].len = cur_len;
     }
-    generate(cur->l, s + '0');
-    generate(cur->r, s + '1');
+    generate(cur->l, (cur_code << 1), cur_len + 1);
+    generate(cur->r, (cur_code << 1) | 1, cur_len + 1);
     
     return;
 }
@@ -71,7 +79,7 @@ void Huffmantree::generate(Node* cur, std::string s){
 Node* Huffmantree::getroot(){
     return root;
 }
-std::map<char, std::string> Huffmantree::getENcodes(){
+Huffmancode* Huffmantree::getcodes() {
     return codes;
 }
 

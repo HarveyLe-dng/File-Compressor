@@ -6,11 +6,12 @@ Bitwriter::Bitwriter(){
     buffer = cnt = 0;
 }
 
-void Bitwriter::write(const std::string &bits, std::ofstream &out){
-    for(char c : bits){
+void Bitwriter::write(unsigned int code, int len, std::ofstream& out) {
+    for (int i = len-1; i >= 0; i--){
         cnt ++ ;
         buffer <<= 1;
-        buffer |= (c == '1' ? 1 : 0);
+        buffer |= ((code >> i) & 1);
+
 
         if(cnt == 8){
             out.put(buffer);

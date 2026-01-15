@@ -5,10 +5,10 @@
 
 class Bitwriter{
     private:
-        char buffer; 
+        unsigned char  buffer; 
         int cnt;
     public:
-        void write(const std::string& bits, std::ofstream& out);
+        void write(unsigned int code, int len, std::ofstream& out);;
         void flush(std::ofstream& out);
         Bitwriter();
 
