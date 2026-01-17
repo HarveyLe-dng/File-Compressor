@@ -1,11 +1,19 @@
 #include "HuffmanTree.h"
 #include "Bitwriter.h"
+#include "CLI11.hpp"
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <map>
 
-void compress(std::string inf, std::string outf){
+void compress(const std::string& inf, const std::string& outf){
     std::ifstream inp(inf, std::ios::binary); // input
     std::ofstream out(outf, std::ios::binary); // output
+
+    if (!inp) {
+        std::cerr << "Loi: Khong tim thay file input: " << inf << std::endl;
+        return;
+    }
 
     std::string text = "";
     char c;
@@ -46,10 +54,15 @@ void compress(std::string inf, std::string outf){
 
 }
 
-void decompress(std::string inf, std::string outf){
+void decompress(const std::string& inf, const std::string& outf){
     std::ifstream inp(inf,std::ios::binary);
-    std::ofstream out(outf);
+    std::ofstream out(outf,std::ios::binary);
     
+    if (!inp) { 
+        std::cerr << "Loi: Khong tim thay file input: " << inf << std::endl;
+        return;
+    }
+
     //lay map size
     int mpsize;
     inp.read(reinterpret_cast<char*>(&mpsize), sizeof(mpsize));
@@ -92,20 +105,32 @@ void decompress(std::string inf, std::string outf){
     inp.close();
     out.close();
 }
-int main(){
+int main(int argc, char* argv[]){
 
-    std::string inputfile = "../data/INP.txt";
-    std::string compressedfile = "../data/OUT.txt";
-    std::string restoredfile = "../data/RES.txt";
+    CLI::App app{"File compressor"};
 
-    // std::string ty; std::cin >> ty;
+    bool com;
+    bool decom;
 
-    // if(ty == "-c")  compress(inputfile, compressedfile);
+    std::string input;
+    std::string output;
 
-    // if(ty == "-d")  decompress (compressedfile, restoredfile);
-
-    compress(inputfile, compressedfile);
-    decompress(compressedfile, restoredfile);
+    auto* modeGroup = app.add_option_group("Mode", "select opreratin mode");
+    modeGroup->add_flag("-c,--compressor", com, "compress file");
+    modeGroup->add_flag("-d,--decompressor", decom, "decompress file");
     
+    modeGroup->require_option(1);
+
+    app.add_option("input", input, "inputfile")->required();
+    app.add_option("ouput", output, "outputfile")->required();
+
+    CLI11_PARSE(app, argc, argv);
+
+    if(com){
+        compress(input, output);
+    }
+    else{
+        decompress(input,output);
+    }
     return 0;
 }
